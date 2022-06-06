@@ -1,5 +1,7 @@
 import { gql } from 'apollo-server-express';
-import createRepository from '../../io/Database/createRepositopry';
+import * as uuid from 'uuid';
+
+import createRepository from '../../io/Database/createRepository';
 import { ListSortmentEnum } from '../List/List';
 
 const clientRepository = createRepository('client');
@@ -33,6 +35,25 @@ export const typeDefs = gql`
   extend type Query {
     client(id: ID!): Client
     clients(options: ClientListOptions): ClientList
+  }
+
+  input CreateClientInput {
+    name: String!
+    email: String!
+  }
+
+  input UpdateClientInput {
+    id: ID!
+    name: String!
+    email: String!
+  }
+
+  extend type Mutation {
+    createClient(input: CreateClientInput!): Client!
+    updateClient(input: UpdateClientInput!): Client!
+    deleteClient(id: ID!): Client!
+    enableClient(id: ID!): Client!
+    disableClient(id: ID!): Client!
   }
 `;
 
@@ -97,5 +118,110 @@ export const resolvers = {
         totalItems: filteredClients.length
       }
     }
+  },
+
+  Mutation: {
+    createClient: async (_, { input }) => {
+      const clients = await clientRepository.read();
+
+      const client = {
+        id: uuid.v4(),
+        name: input.name,
+        email: input.email,
+        disabled: false
+      }
+
+      await clientRepository.write([...clients, client]);
+
+      return client
+    },
+    updateClient: async (_, { input }) => {
+      const clients = await clientRepository.read();
+
+      const currentClient = clients.find((client) => client.id === input.id);
+
+      if (!currentClient)
+        throw new Error(`Client with id "${input.id}" does not exist`)
+
+      const updateClient = {
+        ...currentClient,
+        name: input.name,
+        email: input.email
+      }
+
+      const updatedClients = clients.map((client) => {
+        if (client.id === updateClient.id)
+          return updateClient;
+        return client;
+      })
+
+      await clientRepository.write(updatedClients);
+
+      return updateClient;
+    },
+    deleteClient: async (_, { id }) => {
+      const clients = await clientRepository.read();
+
+      const client = clients.find((client) => client.id === id);
+
+      if (!client)
+        throw new Error(`Cannot delete client with id "${id}"`)
+
+      const updatedListClient = clients.filter((client) => client.id !== id)
+
+      await clientRepository.write(updatedListClient);
+
+      return client;
+    },
+    enableClient: async (_, { id }) => {
+      const clients = await clientRepository.read();
+
+      const currentClient = clients.find((client) => client.id === id);
+
+      if (!currentClient)
+        throw new Error(`Client with id "${id}" does not exist`)
+      if (!currentClient.disabled)
+        throw new Error(`Client with id "${id}" is already enabled`)
+
+      const enableClient = {
+        ...currentClient,
+        disabled: false
+      }
+
+      const updatedClients = clients.map((client) => {
+        if (client.id === enableClient.id)
+          return enableClient;
+        return client;
+      })
+
+      await clientRepository.write(updatedClients);
+
+      return enableClient;
+    },
+    disableClient: async (_, { id }) => {
+      const clients = await clientRepository.read();
+
+      const currentClient = clients.find((client) => client.id === id);
+
+      if (!currentClient)
+        throw new Error(`Client with id "${id}" does not exist`)
+      if (currentClient.disabled)
+        throw new Error(`Client with id "${id}" is already disabled`)
+
+      const disableClient = {
+        ...currentClient,
+        disabled: true
+      }
+
+      const updatedClients = clients.map((client) => {
+        if (client.id === disableClient.id)
+          return disableClient;
+        return client;
+      })
+
+      await clientRepository.write(updatedClients);
+
+      return disableClient;
+    },
   }
 }
