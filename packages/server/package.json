@@ -11,6 +11,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "apollo-server-core": "^3.8.2",
     "esm": "^3.2.25",
     "nodemon": "^2.0.16"
   },
