@@ -47,8 +47,6 @@ The challenges I faced in this project was understanding how the build the queri
 ## :sparkles: Features
 
 :heavy_check_mark: Good structured queries;\
-:heavy_check_mark: ;\
-:heavy_check_mark: Feature 3;
 
 ## :rocket: Technologies
 
@@ -62,7 +60,7 @@ The following tools were used in this project:
 
 ## :white_check_mark: Requirements
 
-Before starting :checkered_flag:, you need to have [Git](https://git-scm.com), [Node](https://nodejs.org/en/) installed and [pnpm](https://pnpm.io/pt/).
+Before starting :checkered_flag:, you need to have [Git](https://git-scm.com), [Node](https://nodejs.org/en/) and [pnpm](https://pnpm.io/pt/) installed.
 
 ## :checkered_flag: Starting
 
@@ -94,7 +92,7 @@ Made with :heart: by <a href="https://github.com/joaopmazzo" target="_blank">MAZ
 
 ---
 
-Pleas feel free to give some tips/advices about the project and my english :)
+Please feel free to give some tips/advices about the project and my english :)
 
 &#xa0;
 
